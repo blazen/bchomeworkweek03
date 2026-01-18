@@ -166,8 +166,8 @@ func newSQLiteDB(filename string) (*gorm.DB, error) {
 	//    - SchemaName: Schema name for databases that support it
 	return gorm.Open(sqlite.Open(dbPath), &gorm.Config{
 		// Logger configuration
-		Logger: logger.Default.LogMode(logger.Info), // Silent for tests, use logger.Info for development
-
+		Logger:      logger.Default.LogMode(logger.Info), // Silent for tests, use logger.Info for development
+		PrepareStmt: true,                                // 执行任何 SQL 时都创建并缓存预编译语句，可以提高后续的调用速度。亦可 session 中设置。
 		// NamingStrategy: Customize how GORM names tables and columns
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   "",    // Prefix for all table names (e.g., "app_")

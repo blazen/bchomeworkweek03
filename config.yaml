@@ -1,0 +1,16 @@
+server:
+  port: "8080"
+  host: "0.0.0.0"
+  mode: "dev"  # dev, release, test
+
+database:
+  host: "localhost"
+  port: 3306
+  username: "root"
+  password: "password"
+  dbname: "myapp"
+
+jwt:
+  secret: "1234567890abcdef"
+  expire: "24h"
+

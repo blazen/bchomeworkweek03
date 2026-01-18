@@ -5,10 +5,20 @@
 ## 技术栈
 
 - **Web 框架**: Gin v1.10.0
-- **ORM**: GORM v1.25.12
+- **ORM**: GORM v1.25.12(Aug 22, 2024), Last release v1.31.1 on Nov 2, 2025. 
+  - **TIPS** GORM `v2.0.0` 发布的 git tag 是 `v1.20.0`
 - **数据库**: SQLite
 - **认证**: JWT (github.com/golang-jwt/jwt/v5)
 - **密码加密**: bcrypt (golang.org/x/crypto)
+
+## 文档
+- GO DOC：https://go.dev/doc/
+- GO LEARN: https://go.dev/learn/
+- GORM: https://gorm.io/zh_CN/docs/gorm_config.html
+- GORM DATABASE AND POOL: https://gorm.io/zh_CN/docs/connecting_to_the_database.html
+- GORM MODEL TAG: https://gorm.io/zh_CN/docs/models.html
+- GORM MODEL ASSOSIATION TAG: https://gorm.io/zh_CN/docs/associations.html
+- GIN: https://gin-gonic.com/en/docs/
 
 ## 功能特性
 
@@ -81,15 +91,16 @@ go run main.go
 | - | POST | `/api/v1/users/login` | 用户登录 | 否 | JSON |
 | - | GET | `/api/v1/users/me` | 获取登录用户信息 | 是 | 无 |
 | - | PUT | `/api/v1/users/me` | 更新登录用户信息 | 是 | JSON |
-| 文章 | GET | `/api/v1/posts` | 查询所有用户的文章 | 否 | Query |
-| - | GET | `/api/v1/posts/:id` | 主键查询文章 | 否 | URL |
-| - | POST | `/api/v1/posts/condition` | 条件查询文章 | 否 | JSON |
-| - | POST | `/api/v1/posts/me` | 创建文章 | 是 | JSON |
+| 文章 | POST | `/api/v1/posts/me` | 创建文章 | 是 | JSON |
 | - | GET | `/api/v1/posts/me` | 查询登录用户的全部文章 | 是 | 无 |
 | - | PUT | `/api/v1/posts/me` | 更新文章 | 是 | JSON |
 | - | DELETE | `/api/v1/posts/me/:id` | 删除文章 | 是 | URL |
-| 评论 | GET | `/api/v1/comments/:postId` | 查询文章的评论 | 否 | URL |
-| - | POST | `/api/v1/comments` | 创建文章的评论 | 否 | JSON |
+| - | GET | `/api/v1/posts` | 查询所有用户的文章 | 否 | Query |
+| - | GET | `/api/v1/posts/:id` | 主键查询文章 | 否 | URL |
+| - | POST | `/api/v1/posts/condition` | 条件查询文章 | 否 | JSON |
+| - | POST | `/api/v1/posts/comment/number/max` | 查询评论数量最多的文章 | 否 | JSON |
+| 评论 | POST | `/api/v1/comments` | 创建文章的评论 | 否 | JSON |
+| - | GET | `/api/v1/comments/:postId` | 查询文章的评论 | 否 | URL |
 | - | DELETE | `/api/v1/comments/me/:postId/:id` | 删除文章的评论 | 否 | URL |
 
 
@@ -142,22 +153,91 @@ curl -X PUT http://localhost:8080/api/v1/users/me \
   }'
 ```
 
+#### 创建文章
 
-## 注意事项
+```bash
+curl -X POST http://localhost:8080/api/v1/posts/me \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "title":"hello","content":"hello go"
+  }'
+```
 
-1. 数据库文件 `users.db` 会在首次运行时自动创建在项目根目录
-2. JWT Secret 在生产环境中应该使用环境变量配置
-3. 密码使用 bcrypt 加密存储
-4. 所有 API 返回统一的 JSON 格式
-5. 项目已配置独立的 `go.mod` 文件，可直接在 `project` 目录下运行
+#### 查询登录用户的全部文章
 
-## 扩展建议
+```bash
+curl http://localhost:8080/api/v1/posts/me \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
 
-- [ ] 添加 Swagger API 文档
-- [ ] 添加单元测试和集成测试
-- [ ] 实现分页查询
-- [ ] 添加日志系统（如 logrus）
-- [ ] 使用 Viper 进行配置管理
-- [ ] 添加 Redis 缓存
-- [ ] 实现文件上传功能
+#### 更新文章
 
+```bash
+curl -X PUT http://localhost:8080/api/v1/posts/me \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "id":1,"title":"hello update","content":"hello update go"
+  }'
+```
+
+#### 删除文章
+
+```bash
+curl -X DELETE http://localhost:8080/api/v1/posts/me/1 \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+#### 查询所有用户的文章
+
+```bash
+curl "http://localhost:8080/api/v1/posts?pageNo=1&pageSize=5"
+```
+
+#### 主键查询文章
+
+```bash
+curl http://localhost:8080/api/v1/posts/1
+```
+
+#### 条件查询文章
+
+```bash
+curl -X POST http://localhost:8080/api/v1/posts/condition \
+ -H "Content-Type: application/json" \
+ -d '{
+    "title":"hello","content":"","min_comment_number":0,"created_at_start":"2026-01-10T12:39:35.350405+08:00","created_at_end":"2026-01-20T15:05:28.3223295+08:00"
+  }'
+```
+
+#### 查询评论数量最多的文章
+
+```bash
+curl http://localhost:8080/api/v1/posts/comment/number/max
+```
+
+#### 创建文章的评论
+
+```bash
+curl -X POST http://localhost:8080/api/v1/comments \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "post_id":2,"content":"ElonMusk"
+  }'
+```
+
+#### 查询文章的评论
+
+```bash
+curl http://localhost:8080/api/v1/comments/2
+```
+
+#### 删除文章的评论
+
+```bash
+curl -X DELETE http://localhost:8080/api/v1/comments/me/2/1 \
+ -H "Authorization: Bearer YOUR_TOKEN" 
+```

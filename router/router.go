@@ -1,6 +1,8 @@
 package router
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
@@ -37,6 +39,7 @@ func SetupRouter(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	// binding.Encoder = json
 
 	// 创建 Gin 引擎
+	// Create a Gin router with default middleware (logger and recovery)
 	r := gin.Default()
 
 	// 全局中间件
@@ -67,6 +70,7 @@ func SetupRouter(cfg *config.Config, db *gorm.DB) *gin.Engine {
 
 	// 需要认证的路由
 	protected := r.Group("/api/v1")
+	log.Printf("Router auth jwt secret:%s\n", cfg.JWT.Secret)
 	protected.Use(middleware.Auth([]byte(cfg.JWT.Secret)))
 	{
 		protected.GET("/users/me", userHandler.GetProfile)

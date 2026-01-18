@@ -25,8 +25,8 @@ type Post struct {
 	Content       string           `json:"content" gorm:"not null;size:100"`
 	CommentNumber uint             `json:"comment_number" gorm:"default:0"`
 	CommentStatus string           `json:"comment_status"`
-	CreatedAt     time.Time        `json:"created_at"`
-	UpdatedAt     time.Time        `json:"updated_at"`
+	CreatedAt     utils.Time1      `json:"created_at"`
+	UpdatedAt     utils.Time1      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt   `json:"-" gorm:"index"`
 	Comments      []Comment        `json:"comments"`
 	User          User             `json:"-"`

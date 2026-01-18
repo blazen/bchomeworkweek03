@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"net/http"
+	"time"
 
 	"gin-examples/project/config"
 	"gin-examples/project/models"
@@ -35,7 +37,15 @@ func main() {
 	// 启动服务器
 	addr := cfg.Server.Host + ":" + cfg.Server.Port
 	log.Printf("Server starting on %s", addr)
-	if err := r.Run(addr); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	// if err := r.Run(addr); err != nil {
+	// 	log.Fatalf("Failed to start server: %v", err)
+	// }
+	s := &http.Server{
+		Addr:           addr,
+		Handler:        r,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
 	}
+	s.ListenAndServe()
 }

@@ -95,7 +95,7 @@ func (s *PostService) ListPostByCondition(req models.ListPostRequest) ([]models.
 	}
 	// 动态拼接条件：标题包含
 	if req.Title != "" {
-		tx = tx.Where("title >= ?", "%"+req.Title+"%")
+		tx = tx.Where("title like ?", "%"+req.Title+"%")
 	}
 	tx = tx.Where("audit_status", "active") // 进查询 title 审计通过的
 	// SELECT * FROM `posts` WHERE comment_number >= 0 AND title >= "%hello%" AND `posts`.`deleted_at` IS NULL ORDER BY created_at desc LIMIT 10
