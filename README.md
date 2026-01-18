@@ -28,12 +28,9 @@
 - ✅ 用户注册、登录（JWT 认证）、查询、更新
 - ✅ 用户文章数统计（废弃AfterCreate，改为Transaction）
 - ✅ 文章CURD
-- ✅ 文章评论数统计（废弃AfterCreate、AfterDelete，改为Transaction），评论数为0时，文章评论状态显示：无评论
+- ✅ 文章评论数统计，评论数为0时，文章评论状态显示：无评论
 - ✅ 评论CURD
 
-## 问题
-- 1 废弃AfterCreate、AfterDelete，改为Transaction 保持一致性。钩子使用 context.WithValue 
-- 2 
 
 ## 项目结构
 
@@ -41,7 +38,9 @@
 project/
 ├── main.go              # 程序入口
 ├── config/              # 配置管理
-│   └── config.go
+│   |── config.go
+│   └── db.go
+├── db/                  # SQLITE数据库文件
 ├── handlers/            # 处理器（Controller）
 │   |── comment_handler.go
 │   |── post_handler.go
@@ -54,16 +53,24 @@ project/
 │   ├── comment.go
 │   ├── post.go
 │   └── user.go
+├── router/              # 路由
+│   └── router.go
 ├── services/            # 业务逻辑层
 │   ├── comment_service.go
 │   ├── post_service.go
 │   └── user_service.go
+├── test/                # 测试
+│   ├── post_handler_test.go
+│   └── post_service_test.go
 └── utils/               # 工具函数
+    ├── audit.go
     ├── errors.go
     ├── generate.go
+    ├── handler.go
     ├── jwt.go
-    ├── page.go
-    └── response.go
+    ├── response.go
+    ├── sql.go           # scope 分页、排序
+    └── time1.go         # JSON日期格式化 YYYY-MM-DD HH:MM:SS
 ```
 
 ## 快速开始
